@@ -1,0 +1,75 @@
+Option Explicit
+
+Private Sub ComboBoxNum1_Change()
+
+End Sub
+
+Private Sub CommandButtonIngresar_Click()
+    
+    'Se muestra el formulario f_balota en pantalla
+    f_balotta.Show
+    
+End Sub
+
+Private Sub CommandButtonJugar_Click()
+    
+    'Llama el método llamar
+    Call jugar
+    
+End Sub
+
+Private Sub CommandButtonSalir_Click()
+    
+    'Guarda el Excel
+    ThisWorkbook.Save
+    
+    'Se sale de Excel
+    Application.Quit
+    
+End Sub
+
+Private Sub Label1_Click()
+
+End Sub
+
+Private Sub Label2_Click()
+
+End Sub
+
+Private Sub LabelNum4_Click()
+
+End Sub
+
+Private Sub UserForm_Initialize()
+
+    Dim i As Integer
+    
+    ' Iniciar aleatoriedad para generar nuevos valores en cada ejecución
+    Randomize
+    
+    ' Inicializar ComboBox para los números del 1 al 43
+    For i = 1 To 43
+        ComboBoxNum1.AddItem i
+        ComboBoxNum2.AddItem i
+        ComboBoxNum3.AddItem i
+        ComboBoxNum4.AddItem i
+        ComboBoxNum5.AddItem i
+        ComboBoxNum6.AddItem i
+    Next i
+    
+    ' Inicializar ComboBox para la Super Balota (1 al 16)
+    For i = 1 To 16
+        ComboBoxBalota.AddItem i
+    Next i
+    
+    ' Sugerencia aleatoria en los ComboBox
+    Me.ComboBoxBalota.ListIndex = Int((16) * Rnd)
+    Me.ComboBoxNum1.ListIndex = Int((43) * Rnd)
+    Me.ComboBoxNum2.ListIndex = Int((43) * Rnd)
+    Me.ComboBoxNum3.ListIndex = Int((43) * Rnd)
+    Me.ComboBoxNum4.ListIndex = Int((43) * Rnd)
+    Me.ComboBoxNum5.ListIndex = Int((43) * Rnd)
+    Me.ComboBoxNum6.ListIndex = Int((43) * Rnd)
+    
+End Sub
+

@@ -1,0 +1,71 @@
+Option Explicit
+
+Private Sub CommandButtonNumGanador_Click()
+
+    ' Generar números ganadores sin repetición
+    Dim i As Integer, j As Integer, num As Integer
+    Dim ganadores(1 To 6) As Integer ' Arreglo para almacenar los 6 números ganadores
+    Dim balotaGanadora As Integer
+    Dim repetido As Boolean ' Indicador para verificar si el número ya existe en el arreglo
+    
+    ' Bucle para generar 6 números únicos
+    For i = 1 To 6
+        
+        Do
+            repetido = False ' Inicializar como no repetido
+            
+            ' Generar un número aleatorio entre 1 y 43
+            num = Int((43) * Rnd + 1)
+            
+            ' Verificar que el número no esté repetido en el arreglo
+            For j = 1 To i - 1
+                If ganadores(j) = num Then
+                    repetido = True ' Si el número ya está en el arreglo, marcar como repetido
+                    Exit For ' Salir del bucle interno si se encuentra repetición
+                End If
+            Next j
+            
+        Loop Until Not repetido ' Repetir hasta que se genere un número no repetido
+        
+        ganadores(i) = num ' Asignar el número único al arreglo de ganadores
+        
+    Next i
+    
+    ' Asignar los números ganadores a los campos del formulario
+    Me.TextBoxNum1.Value = ganadores(1)
+    Me.TextBoxNum2.Value = ganadores(2)
+    Me.TextBoxNum3.Value = ganadores(3)
+    Me.TextBoxNum4.Value = ganadores(4)
+    Me.TextBoxNum5.Value = ganadores(5)
+    Me.TextBoxNum6.Value = ganadores(6)
+    
+    ' Generar un número aleatorio para la balota (entre 1 y 16) y asignarlo al formulario
+    Me.TextBoxBalota.Value = Int((16) * Rnd + 1)
+
+End Sub
+
+Private Sub CommandButtonVerificarNum_Click()
+    
+    'Llama el método VerificarGanadores
+    Call VerificarGanadores
+    
+End Sub
+
+Private Sub CommandButtonRegresar_Click()
+    
+    'Sale de el formulario f_balotta
+    Unload Me
+    
+End Sub
+
+Private Sub f_númeroganador_Click()
+
+End Sub
+
+Private Sub TextBoxNum1_Change()
+
+End Sub
+
+Private Sub UserForm_Click()
+
+End Sub
