@@ -1,0 +1,152 @@
+Option Explicit
+
+Public Sub jugar()
+
+    ' Declaración de variables
+    Dim ws As Worksheet
+    Dim apuesta(1 To 6) As Integer
+    Dim balota As Integer
+    Dim i As Integer, j As Integer
+    Dim repetido As Boolean
+
+    ' Referencia a la hoja de apuestas
+    Set ws = ThisWorkbook.Sheets("Hoja1")
+    
+    ' Capturar los números seleccionados en los ComboBox del formulario
+    apuesta(1) = f_mijuegoBalotto.ComboBoxNum1.Value
+    apuesta(2) = f_mijuegoBalotto.ComboBoxNum2.Value
+    apuesta(3) = f_mijuegoBalotto.ComboBoxNum3.Value
+    apuesta(4) = f_mijuegoBalotto.ComboBoxNum4.Value
+    apuesta(5) = f_mijuegoBalotto.ComboBoxNum5.Value
+    apuesta(6) = f_mijuegoBalotto.ComboBoxNum6.Value
+    balota = f_mijuegoBalotto.ComboBoxBalota.Value
+
+    ' Verificar que no haya números repetidos en la apuesta
+    For i = 1 To 6
+        For j = i + 1 To 6
+            If apuesta(i) = apuesta(j) Then
+                ' Mensaje de error si hay números repetidos y finaliza el proceso
+                MsgBox "Hay números repetidos. Intenta nuevamente.", vbExclamation
+                Exit Sub
+            End If
+        Next j
+    Next i
+
+    ' Variables para determinar la última fila ocupada y asignar un nuevo ID
+    Dim lastRow As Long
+    Dim nuevoID As Long
+    
+    ' Encontrar la última fila usada en la columna 1 de la hoja "Hoja1"
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row + 1
+    
+    ' Asignar ID a la nueva apuesta
+    ' Si es la primera entrada, el ID es 1; si no, es el siguiente consecutivo
+    If lastRow = 6 Then ' La fila 5 sería la primera fila de apuestas
+        nuevoID = 1
+    Else
+        nuevoID = ws.Cells(lastRow - 1, 1).Value + 1
+    End If
+    
+    ' Registrar el ID de la apuesta en la columna 1
+    ws.Cells(lastRow, 1).Value = nuevoID
+    
+    ' Registrar los números de la apuesta en las columnas 2 a 7
+    For i = 1 To 6
+        ws.Cells(lastRow, i + 1).Value = apuesta(i)
+    Next i
+    
+    ' Registrar el número de la balota en la columna 8
+    ws.Cells(lastRow, 8).Value = balota
+    
+    ' Confirmación de registro exitoso
+    MsgBox "Apuesta registrada con éxito.", vbInformation
+    
+End Sub
+Public Sub VerificarGanadores()
+
+    ' Declarar la hoja de trabajo
+Dim ws As Worksheet
+Set ws = ThisWorkbook.Sheets("Hoja1")
+
+' Obtener la última fila ocupada en la columna 1
+Dim lastRow As Long
+lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+
+' Declarar variables para las apuestas y resultados
+Dim idApuesta As Variant
+Dim fila As Long
+Dim numAciertos As Integer
+Dim aciertoBalota As String
+Dim result As String
+
+' Encabezado de resultados
+result = "ID_Apuesta" & vbTab & "Fila" & vbTab & "Numero aciertos" & vbTab & "Acierto Balota" & vbCrLf
+
+' Declarar los números ganadores y la balota ganadora
+Dim numerosGanadores(1 To 6) As Integer
+Dim balotaGanadora As Integer
+
+' Obtener los números ganadores y la balota desde el formulario
+numerosGanadores(1) = CInt(f_balotta.TextBoxNum1.Value)
+numerosGanadores(2) = CInt(f_balotta.TextBoxNum2.Value)
+numerosGanadores(3) = CInt(f_balotta.TextBoxNum3.Value)
+numerosGanadores(4) = CInt(f_balotta.TextBoxNum4.Value)
+numerosGanadores(5) = CInt(f_balotta.TextBoxNum5.Value)
+numerosGanadores(6) = CInt(f_balotta.TextBoxNum6.Value)
+balotaGanadora = CInt(f_balotta.TextBoxBalota.Value)
+
+' Mostrar los números ganadores y la balota en un MsgBox para referencia
+Dim ganadoresInfo As String
+ganadoresInfo = "Números ganadores: " & numerosGanadores(1) & ", " & numerosGanadores(2) & ", " & numerosGanadores(3) & ", " & _
+                numerosGanadores(4) & ", " & numerosGanadores(5) & ", " & numerosGanadores(6) & vbCrLf & _
+                "Balota ganadora: " & balotaGanadora
+MsgBox ganadoresInfo, vbInformation, "Números Ganadores del Formulario"
+
+' Recorrer cada apuesta registrada y verificar los aciertos
+Dim i As Long, j As Integer, k As Integer
+For i = 5 To lastRow ' Asumiendo que los datos de apuestas empiezan en la fila 5
+
+    ' Obtener el ID de la apuesta en la fila actual
+    idApuesta = ws.Cells(i, 1).Value
+    numAciertos = 0 ' Inicializar el contador de aciertos
+
+    ' Contar aciertos en los números seleccionados
+    For j = 2 To 7 ' Columnas donde están los números de la apuesta
+        If IsNumeric(ws.Cells(i, j).Value) Then
+            For k = 1 To 6 ' Comparar con cada número ganador
+                If ws.Cells(i, j).Value = numerosGanadores(k) Then
+                    numAciertos = numAciertos + 1
+                    Exit For ' Salir del bucle interno si hay coincidencia
+                End If
+            Next k
+        End If
+    Next j
+
+    ' Verificar si hay acierto en la balota
+    If ws.Cells(i, 8).Value = balotaGanadora Then
+        aciertoBalota = "Si"
+    Else
+        aciertoBalota = "No"
+    End If
+
+    ' Verificar condiciones para registrar como apuesta ganadora
+    If (numAciertos = 6 And aciertoBalota = "Si") Or _
+       (numAciertos = 6 And aciertoBalota = "No") Or _
+       (numAciertos = 5 And aciertoBalota = "Si") Then
+       
+       ' Registrar en los resultados si cumple las condiciones de ganadora
+       result = result & idApuesta & vbTab & vbTab & i & vbTab & vbTab & numAciertos & vbTab & vbTab & aciertoBalota & vbCrLf
+    End If
+Next i
+
+' Mostrar resultados en un MsgBox
+If result = "ID_Apuesta" & vbTab & "Fila" & vbTab & "Numero aciertos" & vbTab & "Acierto Balota" & vbCrLf Then
+    ' Si no hay apuestas ganadoras, mostrar mensaje de "no hubo ganadores"
+    MsgBox "No hubo ganadores correspondientes."
+Else
+    ' Si hay apuestas ganadoras, mostrar el resultado
+    MsgBox result, vbOKOnly, "Resultados de Apuestas Ganadoras"
+End If
+
+End Sub
+
